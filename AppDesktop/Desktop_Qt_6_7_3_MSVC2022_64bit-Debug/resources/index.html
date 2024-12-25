@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="logo"> <img src="http://127.0.0.1/proyecto_ism/istyle.png" height=120 width=200> </div>
+      <nav>
+        <ul>
+          <li class="nav-link active" data-view="dashboard">Dashboard</li>
+          <li class="nav-link" data-view="products">Products</li>
+          <li class="nav-link" data-view="categories">Categories</li>
+        </ul>
+      </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main">
+      <!-- Dashboard Widgets -->
+      <section id="dashboard-view" class="view">
+        <div class="card">
+          <h3>Products</h3>
+          <p id="product-count">Total Products: 0</p> <!-- Default value set to 0 -->
+          <button class="btn-secondary" onclick="navigateTo('products')">View Products</button>
+        </div>
+
+        <div class="card">
+          <h3>Categories</h3>
+          <p id="category-count">Total Categories: 0</p> <!-- Default value set to 0 -->
+          <button class="btn-secondary" onclick="navigateTo('categories')">View Categories</button>
+        </div>
+      </section>
+
+      <!-- Products View -->
+      <section id="products-view" class="view hidden">
+        <h2>Products</h2>
+        <ul id="product-list"></ul>
+
+      </section>
+
+      <!-- Categories View -->
+      <section id="categories-view" class="view hidden">
+        <h2>Categories</h2>
+        <ul id="category-list"></ul>
+      </section>
+    </main>
+  </div>
+  <script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Categories</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    /* Estilado para el modal */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.6);
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+
+    .modal-content {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+      max-width: 400px;
+      width: 100%;
+    }
+
+    .close-btn {
+      display: block;
+      margin-bottom: 10px;
+      color: red;
+      cursor: pointer;
+    }
+
+    /* Lista de categorias */
+    #category-list {
+      list-style: none;
+      padding: 0;
+    }
+
+    .category-item {
+      border: 1px solid #ccc;
+      padding: 10px;
+      margin: 5px 0;
+      border-radius: 4px;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .btn-primary {
+      margin: 10px 0;
+      padding: 10px;
+      background-color: #007bff;
+      border: none;
+      color: white;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .btn-primary:hover {
+      background-color: #0056b3;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Categories</h1>
+      <button class="btn-primary" id="open-form-btn">Add New Category</button>
+    </header>
+    <main>
+    <button class="btn-primary" onclick="window.history.back()">Volver</button>
+      <ul id="category-list">
+        <!-- Category items will be dynamically injected here -->
+      </ul>
+    </main>
+  </div>
+
+  <!-- Modal para el formulario -->
+  <div class="modal" id="category-modal">
+    <div class="modal-content">
+      <span class="close-btn" id="close-modal">Close</span>
+      <h2>Add New Category</h2>
+      <form id="add-category-form">
+        <label for="category-name">Category Name:</label>
+        <input type="text" id="category-name" name="category_name" required>
+        <button class="btn-primary" type="submit">Add Category</button>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const categoryList = document.getElementById('category-list');
+      const openFormBtn = document.getElementById('open-form-btn');
+      const modal = document.getElementById('category-modal');
+      const closeModal = document.getElementById('close-modal');
+      const addCategoryForm = document.getElementById('add-category-form');
+
+      // Fetch and render categories from the server
+      fetch('http://127.0.0.1/proyecto_ism/consultacategorias.php')
+        .then(response => response.text())
+        .then(xmlString => {
+          const parser = new DOMParser();
+          const xmlDoc = parser.parseFromString(xmlString, 'application/xml');
+          const categorias = xmlDoc.getElementsByTagName('categoria');
+          categoryList.innerHTML = '';
+
+          Array.from(categorias).forEach(categoria => {
+            const nombre = categoria.getElementsByTagName('nombre_categoria')[0].textContent;
+            const descripcion = categoria.getElementsByTagName('descripcion')[0].textContent;
+
+            const li = document.createElement('li');
+            li.className = 'category-item';
+            li.innerHTML = `
+              <div class="category-info">
+                <h3>${nombre}</h3>
+                <h3>Descripcion: ${descripcion}</h3>
+              </div>
+            `;
+            categoryList.appendChild(li);
+          });
+        })
+        .catch(error => {
+          console.error('Error fetching category data:', error);
+          categoryList.innerHTML = '<p>Error loading categories. Please try again later.</p>';
+        });
+
+      // Función para abrir el modal
+      openFormBtn.addEventListener('click', () => {
+        modal.style.display = 'flex';
+      });
+
+      // Función para cerrar el modal
+      closeModal.addEventListener('click', () => {
+        modal.style.display = 'none';
+      });
+
+      // Función para manejar el envío del formulario
+      addCategoryForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const categoryName = document.getElementById('category-name').value;
+
+        fetch('http://127.0.0.1/proyecto_ism/addcategory.php', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ name: categoryName })
+        })
+          .then(response => response.text())
+          .then(data => {
+            alert('Category added successfully!');
+            modal.style.display = 'none';
+            addCategoryForm.reset();
+            // Reload the category list
+            location.reload();
+          })
+          .catch(error => {
+            console.error('Error adding category:', error);
+            alert('Error adding category.');
+          });
+      });
+
+      // Cierra el modal si se hace clic fuera de él
+      window.addEventListener('click', (e) => {
+        if (e.target === modal) {
+          modal.style.display = 'none';
+        }
+      });
+    });
+  </script>
+</body>
+</html>

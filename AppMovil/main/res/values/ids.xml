@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item name="tvCancel" type="id" />
+    <item name="tvWeb" type="id" />
+    <item name="tvRecarga" type="id" />
+</resources>
